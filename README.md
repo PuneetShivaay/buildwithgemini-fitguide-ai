@@ -3,6 +3,7 @@
 An agentic fitness coach built with Google's Agent Development Kit (ADK) and deployed to Vertex AI Agent Engine. Otical FitGuide AI helps users plan custom routines, calculate training metrics, track completed workouts in Firestore, search RAG corpora for herbal lore, generate multimodal exercise visuals and videos, and render interactive UI surfaces via Adaptive UI (A2UI).
 
 ![FitGuide AI Demo](demo.gif)
+Full Video: https://www.youtube.com/watch?v=Egzqtc3wGO8
 
 > 🎥 **Full WebM Demo Recording**: You can also watch the full HD WebM video recording in [`assets/fitguide_agent_demo.webm`](assets/fitguide_agent_demo.webm).
 
