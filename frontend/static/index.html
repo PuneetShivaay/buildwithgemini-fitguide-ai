@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Otical FitGuide AI - Personal Fitness Coach</title>
+<!-- Optional: used only to draw A2UI Icon components. If it can't load, icons fall back to text. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+<style>
+  :root {
+    --accent: #10b981;
+    --accent-dark: #059669;
+    --accent-light: #ecfdf5;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border: #e2e8f0;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px -2px rgba(16, 185, 129, 0.12), 0 2px 6px -1px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Header Styling */
+  header {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2);
+    z-index: 10;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .header-icon {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .header-title {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .header-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    font-weight: 400;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #34d399;
+  }
+
+  /* Log & Dialogue Container */
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1rem;
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    scroll-behavior: smooth;
+  }
+
+  /* Dialogue Message Item */
+  .msg {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .msg.user {
+    flex-direction: row-reverse;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .msg.user .avatar {
+    background: var(--accent-light);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .bubble {
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius-lg);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    text-align: left;
+    max-width: 82%;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    word-break: break-word;
+  }
+
+  .msg.agent .bubble {
+    border-top-left-radius: 4px;
+  }
+
+  .msg.user .bubble {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+    color: #ffffff;
+    border: none;
+    border-top-right-radius: 4px;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+  }
+
+  /* A2UI Rich Card Bubble Reset */
+  .bubble.rich {
+    background: transparent;
+    border: none;
+    padding: 0;
+    max-width: 100%;
+    white-space: normal;
+    box-shadow: none;
+  }
+
+  /* Examples Container */
+  .examples-container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1rem 0.25rem;
+  }
+
+  .examples {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 840px;
+    margin: 0 auto;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+  }
+
+  .chip {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent-dark);
+    background: var(--accent-light);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.15);
+  }
+
+  /* Form & Input Bar */
+  form {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem 0.5rem;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg);
+    transition: all 0.2s ease;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+  }
+
+  button {
+    padding: 0.85rem 1.4rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(16, 185, 129, 0.35);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  /* Footer Styling */
+  .app-footer {
+    text-align: center;
+    padding: 0.5rem 1rem 0.65rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    background: #ffffff;
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .app-footer a {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .app-footer a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  /* --- A2UI component styles (Card, Column, Row, Text, Divider, List, Image, Icon) --- */
+  .a2card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
+    max-width: 100%;
+    transition: transform 0.2s ease;
+  }
+
+  .a2card + .a2card, .a2col > .a2card { margin-top: 0.75rem; }
+  .a2col { display: flex; flex-direction: column; gap: 0.6rem; }
+  .a2row { display: flex; flex-direction: row; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+  .a2row.between { justify-content: space-between; }
+  .a2text { margin: 0; line-height: 1.5; color: var(--text-primary); }
+  .a2text.a2-h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+  .a2text.a2-h2 { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+  .a2text.a2-h3 { font-size: 1.05rem; font-weight: 600; color: var(--accent-dark); }
+  .a2text.a2-h4 { font-size: 0.95rem; font-weight: 600; }
+  .a2text.a2-caption { font-size: 0.85rem; color: var(--text-secondary); }
+  .a2divider { border: none; border-top: 1px solid var(--border); margin: 0.6rem 0; width: 100%; }
+  .a2img { max-width: 100%; border-radius: var(--radius-md); display: block; box-shadow: var(--shadow-sm); }
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-size: 1.3rem;
+    line-height: 1;
+    vertical-align: middle;
+    color: var(--accent-dark);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="header-icon">🏋️</div>
+    <div>
+      <div class="header-title">Otical FitGuide AI</div>
+      <div class="header-subtitle">Personal Workout & Fitness Coach</div>
+    </div>
+  </div>
+  <div class="status-pill">
+    <span class="status-dot"></span>
+    <span>Agent Active</span>
+  </div>
+</header>
+
+<div id="log"></div>
+
+<div class="examples-container">
+  <div class="examples">
+    <button type="button" class="chip" onclick="sendExample('Recommend a 3-day workout routine for intermediate running and core strength')">🏃 3-Day Workout Plan</button>
+    <button type="button" class="chip" onclick="sendExample('Calculate target heart rate training zones for a 28-year-old')">❤️ Heart Rate Zones</button>
+    <button type="button" class="chip" onclick="sendExample('Generate a visual exercise diagram for a Kettlebell Swing')">🎨 Kettlebell Swing Visual</button>
+  </div>
+</div>
+
+<form id="form">
+  <div class="input-wrapper">
+    <input id="input" placeholder="Ask your coach anything about workouts, metrics, or routines…" autocomplete="off" autofocus>
+  </div>
+  <button type="submit">
+    <span>Send</span>
+    <span style="font-size:1.1rem;">➔</span>
+  </button>
+</form>
+
+<!-- <footer class="app-footer">
+  Built with ❤️ by <a href="https://otical.vercel.app/" target="_blank" rel="noopener noreferrer">Otical</a> &amp; <a href="https://guruphoria.netlify.app/" target="_blank" rel="noopener noreferrer">Guruphoria</a>
+</footer> -->
+
+<script>
+const log = document.getElementById("log");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+
+function sendExample(txt) {
+  input.value = txt;
+  form.dispatchEvent(new Event("submit", { cancelable: true }));
+}
+
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+function bubble(who) {
+  const m = el("div", "msg " + who);
+  const avatar = el("div", "avatar", who === "user" ? "👤" : "🏋️");
+  const b = el("div", "bubble");
+  if (who === "agent") {
+    m.appendChild(avatar);
+    m.appendChild(b);
+  } else {
+    m.appendChild(b);
+    m.appendChild(avatar);
+  }
+  log.appendChild(m);
+  log.scrollTop = log.scrollHeight;
+  return b;
+}
+
+/* ----------------------------------------------------------------------------
+ * A2UI mini-renderer (v0.8 Basic Catalog subset).
+ * Renders Card / Column / Row / Text / Divider / List / Image / Icon.
+ * Anything else falls back to plain text (see renderReply). All text goes in via
+ * textContent and image URLs are validated, so agent output can't inject HTML.
+ * -------------------------------------------------------------------------- */
+
+function boundStr(v) {
+  if (v == null) return "";
+  if (typeof v === "string") return v;
+  if (typeof v.literalString === "string") return v.literalString;
+  return "";
+}
+
+function childIds(props) {
+  const ids = [];
+  if (props && typeof props.child === "string") ids.push(props.child);
+  const ch = props && props.children;
+  if (ch && Array.isArray(ch.explicitList)) for (const c of ch.explicitList) if (typeof c === "string") ids.push(c);
+  return ids;
+}
+
+function iconName(n) { return String(n || "").replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/\s+/g, "_").toLowerCase(); }
+
+function buildNode(id, comps, seen) {
+  if (!id || seen.has(id)) return null;
+  seen.add(id);
+  const spec = comps[id];
+  if (!spec || typeof spec !== "object") return null;
+  const type = Object.keys(spec)[0];
+  const props = spec[type] || {};
+  const kids = () => childIds(props).map(cid => buildNode(cid, comps, seen)).filter(Boolean);
+
+  switch (type) {
+    case "Card": {
+      const d = el("div", "a2card"); kids().forEach(n => d.appendChild(n)); return d;
+    }
+    case "Column":
+    case "List": {
+      const horizontal = type === "List" && props.direction === "horizontal";
+      const d = el("div", horizontal ? "a2row" : "a2col"); kids().forEach(n => d.appendChild(n)); return d;
+    }
+    case "Row": {
+      const d = el("div", "a2row" + (props.distribution === "spaceBetween" ? " between" : ""));
+      kids().forEach(n => d.appendChild(n)); return d;
+    }
+    case "Text": {
+      const t = el("div", "a2text");
+      const hint = String(props.usageHint || "body").toLowerCase();
+      if (["h1", "h2", "h3", "h4", "h5", "h6"].includes(hint)) t.classList.add("a2-" + hint);
+      else if (hint === "caption") t.classList.add("a2-caption");
+      t.textContent = boundStr(props.text);
+      return t;
+    }
+    case "Divider":
+      return el("hr", "a2divider");
+    case "Image": {
+      const src = boundStr(props.url || props.src);
+      if (!/^https?:\/\//i.test(src)) return null;
+      const img = el("img", "a2img"); img.src = src; img.alt = boundStr(props.alt) || ""; return img;
+    }
+    case "Icon": {
+      const s = el("span", "material-symbols-outlined"); s.textContent = iconName(boundStr(props.name) || props.name); return s;
+    }
+    default:
+      return null;
+  }
+}
+
+function renderSurface(messages, container) {
+  const comps = {};
+  const roots = [];
+  for (const m of messages) {
+    if (m.beginRendering && typeof m.beginRendering.root === "string") roots.push(m.beginRendering.root);
+    const su = m.surfaceUpdate;
+    if (su && Array.isArray(su.components)) for (const c of su.components) if (c && c.id && c.component) comps[c.id] = c.component;
+  }
+  let rootIds = roots.filter(r => comps[r]);
+  if (rootIds.length === 0) {
+    const referenced = new Set();
+    for (const id in comps) { const spec = comps[id]; childIds(spec[Object.keys(spec)[0]] || {}).forEach(c => referenced.add(c)); }
+    rootIds = Object.keys(comps).filter(id => !referenced.has(id));
+  }
+  let drew = false;
+  for (const rid of rootIds) { const node = buildNode(rid, comps, new Set()); if (node) { container.appendChild(node); drew = true; } }
+  return drew;
+}
+
+function flattenText(messages) {
+  const out = [];
+  for (const m of messages) {
+    const su = m.surfaceUpdate;
+    if (su && Array.isArray(su.components)) for (const c of su.components) if (c && c.component && c.component.Text) out.push(boundStr(c.component.Text.text));
+  }
+  return out.join("\n").trim();
+}
+
+function renderReply(b, parts) {
+  b.textContent = "";
+  const texts = parts.filter(p => p && (p.kind === "text" || (!p.kind && p.text))).map(p => p.text || "");
+  const a2ui = parts.filter(p => p && p.kind === "a2ui" && p.data).map(p => p.data);
+
+  const textStr = texts.join("\n").trim();
+  if (textStr) b.appendChild(el("div", null, textStr));
+
+  if (a2ui.length) {
+    b.classList.add("rich");
+    if (!renderSurface(a2ui, b)) b.appendChild(el("div", null, flattenText(a2ui) || "(no card content)"));
+  }
+  if (!b.childNodes.length) b.textContent = "(no response)";
+  log.scrollTop = log.scrollHeight;
+}
+
+form.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  bubble("user").textContent = text;
+  input.value = "";
+  const b = bubble("agent"); b.textContent = "…";
+  try {
+    const res = await fetch("/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text }) });
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); }
+    catch { throw new Error(`Server returned non-JSON (HTTP ${res.status}). ${raw.slice(0, 300)}`); }
+    renderReply(b, data.parts || []);
+  } catch (e) {
+    b.textContent = "Error: " + e.message;
+  }
+});
+</script>
+</body>
+</html>
