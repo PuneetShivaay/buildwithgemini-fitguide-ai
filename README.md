@@ -4,6 +4,8 @@ An agentic fitness coach built with Google's Agent Development Kit (ADK) and dep
 
 ![FitGuide AI Demo](demo.gif)
 
+> 🎥 **Full WebM Demo Recording**: You can also watch the full HD WebM video recording in [`assets/fitguide_agent_demo.webm`](assets/fitguide_agent_demo.webm).
+
 ---
 
 ## 🌟 Implemented Features & Architecture
