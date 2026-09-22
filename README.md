@@ -44,6 +44,18 @@ An agentic fitness coach built with Google's Agent Development Kit (ADK) and dep
 
 ---
 
+## 📚 Complete Documentation & Deep Dives
+
+For detailed technical specifications, architecture diagrams, build decisions, and deployment guides, refer to our comprehensive documentation suite in the [`docs/`](docs/) directory:
+
+- 📐 **[System Architecture Diagram & Flow (`docs/ARCHITECTURE.md`)](docs/ARCHITECTURE.md)** — Detailed Mermaid flowcharts, sequence diagrams, and GCP service layout.
+- 🛠️ **[Tools & API Reference Specification (`docs/API_AND_TOOLS.md`)](docs/API_AND_TOOLS.md)** — Complete 14-tool specifications, parameters, return schemas, and backend bindings.
+- 📖 **[Build Journey & Design Rationale (`docs/BUILD_JOURNEY_AND_RATIONALE.md`)](docs/BUILD_JOURNEY_AND_RATIONALE.md)** — Step-by-step breakdown of how and why each component was built.
+- 🚀 **[Production Deployment Guide (`docs/DEPLOYMENT_GUIDE.md`)](docs/DEPLOYMENT_GUIDE.md)** — Step-by-step CLI commands for Agent Engine and Cloud Run deployment.
+- 🔗 **[Important Links & Resource Directory (`docs/IMPORTANT_LINKS.md`)](docs/IMPORTANT_LINKS.md)** — Live app URLs, GCP consoles, media links, reference guides, and resource IDs.
+
+---
+
 ## 🛠️ Project Structure
 
 ```
@@ -52,13 +64,20 @@ fitguide-ai/
 │   ├── agent.py            # Main ADK Root Agent, tools, and callbacks
 │   ├── a2ui_utils.py       # A2UI response parser & callback
 │   └── __init__.py
+├── assets/
+│   └── fitguide_agent_demo.webm # Full HD WebM video recording
+├── docs/
+│   ├── ARCHITECTURE.md     # System flowcharts & sequence diagrams
+│   ├── API_AND_TOOLS.md    # 14-tool specification catalog
+│   ├── BUILD_JOURNEY_AND_RATIONALE.md # Step-by-step build rationale
+│   ├── DEPLOYMENT_GUIDE.md # Vertex AI Agent Engine & Cloud Run guide
+│   └── IMPORTANT_LINKS.md  # App URLs, GCP consoles, media & resource IDs
 ├── frontend/
 │   ├── main.py             # FastAPI proxy server
 │   └── static/
 │       └── index.html      # Rebranded frontend UI with A2UI renderer
 ├── demo.gif                # Looping demo recording of FitGuide AI
 ├── agents-cli-manifest.yaml # Agent deployment manifest
-├── requirements.txt        # Python dependencies
 └── README.md
 ```
 
